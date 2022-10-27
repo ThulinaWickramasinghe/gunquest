@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using RPG.Data;
 using RPG.Dtos.Fight;
@@ -11,9 +12,11 @@ namespace RPG.Services.FightService
     public class FightService : IFightService
     {
         private readonly DataContext _context;
+        private readonly IMapper _mapper;
 
-        public FightService(DataContext context)
+        public FightService(DataContext context, IMapper mapper)
         {
+            _mapper = mapper;
             _context = context;
         }
 
@@ -44,7 +47,7 @@ namespace RPG.Services.FightService
                         string attackUsed = string.Empty;
                         bool useWeapon = new Random().Next(2) == 0;
 
-                        if(useWeapon)
+                        if (useWeapon)
                         {
                             attackUsed = attacker.Weapon.Name;
                             damage = DoWeaponAttack(attacker, opponent);
@@ -53,13 +56,14 @@ namespace RPG.Services.FightService
                         {
                             var skill = attacker.Skills[new Random().Next(attacker.Skills.Count)];
                             attackUsed = skill.Name;
-                            damage = DoSkillAttack(attacker,opponent,skill);
+                            damage = DoSkillAttack(attacker, opponent, skill);
                         }
 
                         response.Data.Log
                             .Add($"{attacker.Name} attacks {opponent.Name} using {attackUsed} with {(damage >= 0 ? damage : 0)} damage.");
 
-                        if(opponent.HitPoints <= 0){
+                        if (opponent.HitPoints <= 0)
+                        {
                             defeated = true;
                             attacker.Victories++;
                             opponent.Defeats++;
@@ -71,7 +75,8 @@ namespace RPG.Services.FightService
                 }
 
                 characters.ForEach(
-                    c => {
+                    c =>
+                    {
                         c.Fights++;
                         c.HitPoints = 100;
                     }
@@ -192,6 +197,22 @@ namespace RPG.Services.FightService
             }
 
             return damage;
+        }
+
+        public async Task<ServiceResponse<List<HighScoreDto>>> GetHighScore()
+        {
+            var characters = await _context.Characters
+                 .Where(c => c.Fights > 0)
+                 .OrderByDescending(c => c.Victories)
+                 .ThenBy(c => c.Defeats)
+                 .ToListAsync();
+
+            var response = new ServiceResponse<List<HighScoreDto>>
+            {
+                Data = characters.Select(c => _mapper.Map<HighScoreDto>(c)).ToList()
+            };
+
+            return response;
         }
     }
 }
