@@ -29,7 +29,6 @@ namespace RPG.Services.WeaponService
                         c.Id == newWeapon.CharacterId &&
                         c.User.Id == int.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier)));
 
-
                 if (character == null)
                 {
                     response.Success = false;
