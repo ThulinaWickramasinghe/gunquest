@@ -29,10 +29,10 @@ namespace RPG.Controllers
             return Ok(response);
         }
 
-         [HttpPost("login")]
+        [HttpPost("login")]
         public async Task<ActionResult<ServiceResponse<int>>> Login(UserLoginDto request)
         {
-            var response = await _authRepo.Login(request.Username,request.Password);
+            var response = await _authRepo.Login(request.Username, request.Password);
 
             if (!response.Success)
             {

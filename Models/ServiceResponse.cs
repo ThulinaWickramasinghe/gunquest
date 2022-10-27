@@ -4,6 +4,6 @@ namespace RPG.Models
     {
         public T? Data { get; set; }
         public bool Success { get; set; } = true;
-        public string Messege {get; set;} = string.Empty;
+        public string Messege { get; set; } = string.Empty;
     }
 }

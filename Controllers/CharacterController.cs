@@ -58,7 +58,8 @@ namespace RPG.Controllers
         }
 
         [HttpPost("Skill")]
-        public async Task<ActionResult<ServiceResponse<GetCharacterDto>>> AddCharacterSkill(AddCharacterSkillDto newCharacterSkill){
+        public async Task<ActionResult<ServiceResponse<GetCharacterDto>>> AddCharacterSkill(AddCharacterSkillDto newCharacterSkill)
+        {
             return Ok(await _characterService.AddCharacterSkill(newCharacterSkill));
         }
     }

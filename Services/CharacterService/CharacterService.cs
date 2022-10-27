@@ -29,10 +29,11 @@ namespace RPG.Services.CharacterService
             character.User = await _context.Users.FirstOrDefaultAsync(u => u.Id == GetUserId());
             _context.Characters.Add(character);
             await _context.SaveChangesAsync();
+
             serviceResponse.Data = await _context.Characters
-            .Where(c => c.User.Id == GetUserId())
-            .Select(c => _mapper.Map<GetCharacterDto>(c))
-            .ToListAsync();
+                .Where(c => c.User.Id == GetUserId())
+                .Select(c => _mapper.Map<GetCharacterDto>(c))
+                .ToListAsync();
 
             return serviceResponse;
         }
@@ -40,11 +41,13 @@ namespace RPG.Services.CharacterService
         public async Task<ServiceResponse<List<GetCharacterDto>>> GetAllCharacters()
         {
             var response = new ServiceResponse<List<GetCharacterDto>>();
+
             var dbCharacters = await _context.Characters
                 .Where(c => c.User.Id == GetUserId())
                 .Include(c => c.Weapon)
                 .Include(c => c.Skills)
                 .ToListAsync();
+
             response.Data = dbCharacters.Select(c => _mapper.Map<GetCharacterDto>(c)).ToList();
             return response;
         }
@@ -52,10 +55,12 @@ namespace RPG.Services.CharacterService
         public async Task<ServiceResponse<GetCharacterDto>> GetCharacterById(int id)
         {
             var serviceResponse = new ServiceResponse<GetCharacterDto>();
+
             var dbCharacter = await _context.Characters
                 .Include(c => c.Weapon)
                 .Include(c => c.Skills)
                 .FirstOrDefaultAsync(c => c.Id == id && c.User.Id == GetUserId());
+
             serviceResponse.Data = _mapper.Map<GetCharacterDto>(dbCharacter);
             return serviceResponse;
         }
@@ -68,7 +73,7 @@ namespace RPG.Services.CharacterService
                 var character = await _context.Characters
                 .Include(c => c.User)
                 .FirstOrDefaultAsync(c => c.Id == updatedCharacter.Id);
-                // _mapper.Map(updatedCharacter,character);
+
                 if (character.User.Id == GetUserId())
                 {
                     character.Name = updatedCharacter.Name;
@@ -91,25 +96,26 @@ namespace RPG.Services.CharacterService
                 response.Success = false;
                 response.Messege = e.Message;
             }
+
             return response;
         }
 
         public async Task<ServiceResponse<List<GetCharacterDto>>> DeleteCharacter(int id)
         {
             ServiceResponse<List<GetCharacterDto>> response = new ServiceResponse<List<GetCharacterDto>>();
+
             try
             {
-                Character character = await _context.Characters
-                    .FirstOrDefaultAsync(c => c.Id == id && c.User.Id == GetUserId());
+                Character character = await _context.Characters.FirstOrDefaultAsync(c => c.Id == id && c.User.Id == GetUserId());
 
                 if (character != null)
                 {
                     _context.Characters.Remove(character);
                     await _context.SaveChangesAsync();
                     response.Data = _context.Characters
-                    .Where(c => c.User.Id == GetUserId())
-                    .Select(c => _mapper.Map<GetCharacterDto>(c))
-                    .ToList();
+                        .Where(c => c.User.Id == GetUserId())
+                        .Select(c => _mapper.Map<GetCharacterDto>(c))
+                        .ToList();
                 }
                 else
                 {
@@ -123,6 +129,7 @@ namespace RPG.Services.CharacterService
                 response.Success = false;
                 response.Messege = e.Message;
             }
+
             return response;
         }
 
@@ -133,12 +140,12 @@ namespace RPG.Services.CharacterService
             try
             {
                 var character = await _context.Characters
-                .Include(c => c.Weapon)
-                .Include(c => c.Skills)
-                .FirstOrDefaultAsync(
-                    c => c.Id == newCharacterSkill.CharacterId &&
-                    c.User.Id == GetUserId()
-                );
+                    .Include(c => c.Weapon)
+                    .Include(c => c.Skills)
+                    .FirstOrDefaultAsync(
+                        c => c.Id == newCharacterSkill.CharacterId &&
+                        c.User.Id == GetUserId()
+                    );
 
                 if (character == null)
                 {

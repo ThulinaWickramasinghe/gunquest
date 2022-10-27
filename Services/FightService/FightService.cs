@@ -109,7 +109,7 @@ namespace RPG.Services.FightService
 
                 int damage = DoSkillAttack(attacker, opponent, skill);
 
-                if (opponent.HitPoints <= 0)
+                if (opponent?.HitPoints <= 0)
                 {
                     response.Messege = $"{opponent.Name} has been defeated!";
                 }

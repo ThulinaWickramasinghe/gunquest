@@ -8,5 +8,4 @@ namespace RPG.Models
         public byte[] PasswordSalt { get; set; }
         public List<Character>? Characters { get; set; }
     }
-
 }

@@ -31,7 +31,9 @@ namespace RPG.Data
             {
                 response.Success = false;
                 response.Messege = "Wrong password.";
-            }else{
+            }
+            else
+            {
                 response.Data = CreateToken(user);
             }
 
@@ -85,13 +87,14 @@ namespace RPG.Data
             }
         }
 
-        private string CreateToken(User user){
+        private string CreateToken(User user)
+        {
             List<Claim> claims = new List<Claim> {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.Username)
             };
             SymmetricSecurityKey key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:Token").Value));
-            
+
             SigningCredentials creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
             SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
