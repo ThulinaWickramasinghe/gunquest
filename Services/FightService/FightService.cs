@@ -158,7 +158,7 @@ namespace RPG.Services.FightService
                     .FirstOrDefaultAsync(c => c.Id == request.OpponentId);
                 int damage = DoWeaponAttack(attacker, opponent);
 
-                if (opponent.HitPoints <= 0)
+                if (opponent?.HitPoints <= 0)
                 {
                     response.Messege = $"{opponent.Name} has been defeated!";
                 }
