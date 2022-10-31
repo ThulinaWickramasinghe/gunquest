@@ -9,15 +9,21 @@ using RPG.Services.FightService;
 using RPG.Services.WeaponService;
 using Swashbuckle.AspNetCore.Filters;
 
-var builder = WebApplication.CreateBuilder(args);
-
+ // create an instance of WebApplicationBuilder class with command line arguments
+var builder = WebApplication.CreateBuilder(args); 
+ 
+// Add data base connection for SQL server
 builder.Services.AddDbContext<DataContext>(
     options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 
+// Add services for controllers
 builder.Services.AddControllers();
 
+// Add support for Minimal API's
 builder.Services.AddEndpointsApiExplorer();
+
+// Add swagger services
 builder.Services.AddSwaggerGen(
     c =>
     {
@@ -55,7 +61,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 );
 
 builder.Services.AddHttpContextAccessor();
+
+//register WeaponService with a scoped lifetime
 builder.Services.AddScoped<IWeaponService, WeaponService>();
+
+//register FightService service with a scoped lifetime
 builder.Services.AddScoped<IFightService, FightService>();
 
 var app = builder.Build();
