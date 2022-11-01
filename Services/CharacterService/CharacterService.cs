@@ -22,6 +22,9 @@ namespace RPG.Services.CharacterService
         private int GetUserId() => int.Parse(
             _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier)
         );
+
+        private string GetUserRole() => 
+           _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Role);
         public async Task<ServiceResponse<List<GetCharacterDto>>> AddCharacter(AddCharacterDto newCharacter)
         {
             var serviceResponse = new ServiceResponse<List<GetCharacterDto>>();
@@ -42,11 +45,14 @@ namespace RPG.Services.CharacterService
         {
             var response = new ServiceResponse<List<GetCharacterDto>>();
 
-            var dbCharacters = await _context.Characters
-                .Where(c => c.User.Id == GetUserId())
-                .Include(c => c.Weapon)
-                .Include(c => c.Skills)
-                .ToListAsync();
+            var dbCharacters = 
+                GetUserRole().Equals("Admin") ?
+                await _context.Characters.ToListAsync() :
+                await _context.Characters
+                    .Where(c => c.User.Id == GetUserId())
+                    .Include(c => c.Weapon)
+                    .Include(c => c.Skills)
+                    .ToListAsync();
 
             response.Data = dbCharacters.Select(c => _mapper.Map<GetCharacterDto>(c)).ToList();
             return response;
